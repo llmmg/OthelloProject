@@ -29,12 +29,13 @@ namespace Othello
 
             curentColor = new SolidColorBrush(Colors.Red);
 
+            //Add rectangles to grid/xaml
             for(int i=0;i<8;i++)
             {
                 for(int j=0;j<8;j++)
                 {
                     Rectangle rect = new Rectangle();
-                    rect.Fill = new SolidColorBrush(Colors.AliceBlue);
+                    rect.Fill = new SolidColorBrush(Colors.Transparent);
                     rect.Stroke = new SolidColorBrush(Colors.Black);
                     theGrid.Children.Add(rect);
                     Grid.SetColumn(rect, i);
