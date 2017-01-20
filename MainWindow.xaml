@@ -6,8 +6,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Othello"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid x:Name="theGrid">
+        Title="MainWindow" Height="500" Width="500">
+    <Grid x:Name="theGrid" Margin="30,30,30,30">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="1*"/>
@@ -28,6 +28,8 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
+        <Label x:Name="lblScoreB" Content="{Binding ElementName=MyOthello, Path=updateScoreBlack}" HorizontalAlignment="Left" Margin="1,-28,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="105"/>
+        <Label x:Name="lblScoreW" Content="{Binding ElementName=MyOthello, Path=updateScoreWhite}" HorizontalAlignment="Left" Margin="3,-28,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="105" Grid.Column="2"/>
         <!--<Slider x:Name="mySlider" Grid.Column="3" Grid.Row="4" Minimum="0" Maximum="100" Margin="0,10,0,30" Grid.RowSpan="2"/>
         <Label Content="{Binding Value, ElementName=mySlider}"
                FontSize="{Binding Value,ElementName=mySlider}"

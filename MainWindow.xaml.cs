@@ -44,6 +44,7 @@ namespace Othello
                     Rectangle rect = new Rectangle();
                     rect.Fill = new SolidColorBrush(Colors.Green);
                     rect.Stroke = new SolidColorBrush(Colors.Black);
+
                     //preset pieces colors
                     if((i==3 && j==3) ||(i==4 && j==4))
                     {
@@ -53,14 +54,13 @@ namespace Othello
                     {
                         rect.Fill = new SolidColorBrush(Colors.Black);
                     }
+                    //add to grid
                     theGrid.Children.Add(rect);
-
-                    
-
+                                    
                     Grid.SetColumn(rect, i);
                     Grid.SetRow(rect, j);
                     rect.MouseLeftButtonDown += new MouseButtonEventHandler(onClick);
-                
+                    rect.MouseDown += new MouseButtonEventHandler(updateScores);
                     //add in rectsArray
                     gridRects[i,j] = rect;
                 }
@@ -79,8 +79,12 @@ namespace Othello
 
         //Handler for dataBinding
         public event PropertyChangedEventHandler PropertyChanged;
-
         private Brush curentColor;
+
+        private String scoreWhite;
+        private String scoreBlack;
+
+
 
         public Brush ReColor
         {
@@ -89,6 +93,24 @@ namespace Othello
             {
                 curentColor = value;
                 NotifyPropertyChanged("ReColor");
+            }
+        }
+        public String updateScoreBlack
+        {
+            get { return scoreBlack; }
+            set
+            {
+                scoreBlack = value;
+                NotifyPropertyChanged("updateScoreBlack");
+            }
+        }
+        public String updateScoreWhite
+        {
+            get { return scoreWhite; }
+            set
+            {
+                scoreWhite = value;
+                NotifyPropertyChanged("updateScoreWhite");
             }
         }
         //databinding
@@ -104,6 +126,7 @@ namespace Othello
         {
             ReColor = new SolidColorBrush(Colors.Red);
         }
+
 
         //Event called by all rectangles
         private void onClick(object sender, MouseButtonEventArgs e)
@@ -162,6 +185,11 @@ namespace Othello
             }
         }
 
+        private void updateScores(object sender, MouseButtonEventArgs e)
+        {
+            updateScoreBlack = "Score black "+myBoard.getBlackScore().ToString();
+            updateScoreWhite = "Score white "+myBoard.getWhiteScore().ToString();
+        }
         //DEPRECATED - used for/by databinding
         private void rect00_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
