@@ -127,7 +127,10 @@ namespace Othello
             //other turn
             isWhite = !isWhite;
 
+            //Update board colors
             updateBoard();
+
+            //TODO: Databinding to display score and who's turn to play
             
         }
         private void updateBoard()
