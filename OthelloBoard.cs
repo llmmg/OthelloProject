@@ -95,6 +95,12 @@ namespace Othello
             throw new NotImplementedException();
         }
 
+        //test method that return state of the board (to update pieces after a move)
+        public tileState[,] getState()
+        {
+            return board;
+        }
+
         public bool isPlayable(int column, int line, bool isWhite)
         {
 

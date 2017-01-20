@@ -26,10 +26,13 @@ namespace Othello
 
         private OthelloBoard myBoard;
         private bool isWhite;
+        private Rectangle[,] gridRects;
 
         public MainWindow()
         {
             InitializeComponent();
+
+            gridRects = new Rectangle[8,8];
 
             curentColor = new SolidColorBrush(Colors.Red);
 
@@ -51,9 +54,15 @@ namespace Othello
                         rect.Fill = new SolidColorBrush(Colors.Black);
                     }
                     theGrid.Children.Add(rect);
+
+                    
+
                     Grid.SetColumn(rect, i);
                     Grid.SetRow(rect, j);
                     rect.MouseLeftButtonDown += new MouseButtonEventHandler(onClick);
+                
+                    //add in rectsArray
+                    gridRects[i,j] = rect;
                 }
                    
             }
@@ -117,7 +126,27 @@ namespace Othello
                 
             //other turn
             isWhite = !isWhite;
+
+            updateBoard();
             
+        }
+        private void updateBoard()
+        {
+           tileState[,] state= myBoard.getState();
+
+            for(int i=0;i<8;i++)
+            {
+                for(int j=0;j<8;j++)
+                {
+                    if(state[i,j]==tileState.BLACK)
+                    {
+                        gridRects[i,j].Fill=new SolidColorBrush(Colors.Black);
+                    }else if(state[i, j] == tileState.WHITE)
+                    {
+                        gridRects[i, j].Fill = new SolidColorBrush(Colors.WhiteSmoke);
+                    }                 
+                }
+            }
         }
 
         //DEPRECATED - used for/by databinding
