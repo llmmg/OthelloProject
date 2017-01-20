@@ -69,8 +69,8 @@ namespace Othello
 
             //TEST OthelloBoard
             myBoard = new OthelloBoard();
-
-           
+            //update for playables areas
+            updateBoard();
 
             //boolean Black/White => turn to turn
             isWhite = true;
@@ -145,6 +145,11 @@ namespace Othello
                     {
                         gridRects[i, j].Fill = new SolidColorBrush(Colors.WhiteSmoke);
                     }                 
+
+                    if(myBoard.isPlayable(i,j,isWhite))
+                    {
+                        gridRects[i, j].Fill = new SolidColorBrush(Colors.LightGreen);
+                    }
                 }
             }
         }
