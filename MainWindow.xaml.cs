@@ -138,17 +138,22 @@ namespace Othello
             {
                 for(int j=0;j<8;j++)
                 {
+                    //apply correct color
                     if(state[i,j]==tileState.BLACK)
                     {
                         gridRects[i,j].Fill=new SolidColorBrush(Colors.Black);
                     }else if(state[i, j] == tileState.WHITE)
                     {
                         gridRects[i, j].Fill = new SolidColorBrush(Colors.WhiteSmoke);
-                    }                 
-
+                    }else 
+                    
+                    //apply "playable" color or background color
                     if(myBoard.isPlayable(i,j,isWhite))
                     {
                         gridRects[i, j].Fill = new SolidColorBrush(Colors.LightGreen);
+                    }else if(state[i,j]==tileState.EMPTY)
+                    {
+                        gridRects[i, j].Fill = new SolidColorBrush(Colors.Green);
                     }
                 }
             }
