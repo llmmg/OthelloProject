@@ -23,6 +23,10 @@ namespace Othello
     {
         //TODO: binder les grids avec des objets/fonctions pour qu'elles changent de couleurs (ou qu'une image s'affiche) lors d'un click
         //et selon les "etats" possibles
+
+        private OthelloBoard myBoard;
+        private bool isWhite;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -35,8 +39,17 @@ namespace Othello
                 for(int j=0;j<8;j++)
                 {
                     Rectangle rect = new Rectangle();
-                    rect.Fill = new SolidColorBrush(Colors.Transparent);
+                    rect.Fill = new SolidColorBrush(Colors.Green);
                     rect.Stroke = new SolidColorBrush(Colors.Black);
+                    //preset pieces colors
+                    if((i==3 && j==3) ||(i==4 && j==4))
+                    {
+                        rect.Fill = new SolidColorBrush(Colors.WhiteSmoke);
+
+                    }else if((i ==4  && j == 3) || (i == 3 && j == 4))
+                    {
+                        rect.Fill = new SolidColorBrush(Colors.Black);
+                    }
                     theGrid.Children.Add(rect);
                     Grid.SetColumn(rect, i);
                     Grid.SetRow(rect, j);
@@ -44,9 +57,18 @@ namespace Othello
                 }
                    
             }
-       
+
+            //TEST OthelloBoard
+            myBoard = new OthelloBoard();
+
+           
+
+            //boolean Black/White => turn to turn
+            isWhite = true;
+ 
         }
 
+        //Handler for dataBinding
         public event PropertyChangedEventHandler PropertyChanged;
 
         private Brush curentColor;
@@ -60,6 +82,7 @@ namespace Othello
                 NotifyPropertyChanged("ReColor");
             }
         }
+        //databinding
         private void NotifyPropertyChanged(String info)
         {
             if (PropertyChanged != null)
@@ -67,28 +90,49 @@ namespace Othello
                 PropertyChanged(this, new PropertyChangedEventArgs(info));
             }
         }
+        // --databinding
         public void doColor(object sender)
         {
             ReColor = new SolidColorBrush(Colors.Red);
         }
 
+        //Event called by all rectangles
         private void onClick(object sender, MouseButtonEventArgs e)
         {
             Rectangle curRect = (Rectangle)sender;
+            //MessageBox.Show("col(x)= "+ Grid.GetColumn(curRect)+ " row(y)="+ Grid.GetRow(curRect));
+            int posX = Grid.GetColumn(curRect);
+            int posY = Grid.GetRow(curRect);
 
-            MessageBox.Show("col(x)= "+ Grid.GetColumn(curRect)+ " row(y)="+ Grid.GetRow(curRect));
+            if(myBoard.playMove(posX, posY, isWhite))
+            {
+                if(isWhite)
+                {
+                    curRect.Fill = new SolidColorBrush(Colors.WhiteSmoke);
+                }else
+                {
+                    curRect.Fill = new SolidColorBrush(Colors.Black);
+                }
+            }
+                
+            //other turn
+            isWhite = !isWhite;
+            
         }
 
+        //DEPRECATED - used for/by databinding
         private void rect00_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             ReColor = new SolidColorBrush(Colors.Red);
         }
 
+        //DEPRECATED - used for/by databinding
         private void rect10_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             ReColor = new SolidColorBrush(Colors.Red);
         }
 
+        //DEPRECATED - used for/by databinding
         private void rect20_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             ReColor = new SolidColorBrush(Colors.Red);
