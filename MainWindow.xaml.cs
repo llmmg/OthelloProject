@@ -160,6 +160,9 @@ namespace Othello
         {
            tileState[,] state= myBoard.getState();
 
+            //test for when one color can't be played before end of game
+            int playableCount = 0;
+
             for(int i=0;i<8;i++)
             {
                 for(int j=0;j<8;j++)
@@ -177,11 +180,28 @@ namespace Othello
                     if(myBoard.isPlayable(i,j,isWhite))
                     {
                         gridRects[i, j].Fill = new SolidColorBrush(Colors.LightGreen);
+                        
+                        //imcrement counter
+                        playableCount++;
+
                     }else if(state[i,j]==tileState.EMPTY)
                     {
                         gridRects[i, j].Fill = new SolidColorBrush(Colors.Green);
                     }
                 }
+            }
+            if(playableCount==0)
+            {
+                string winner="";
+                if (myBoard.getBlackScore() < myBoard.getWhiteScore())
+                {
+                    winner = ("White win!");
+                }
+                else
+                {
+                    winner = ("Black win!");
+                }
+                MessageBox.Show("--- END OF GAME --- \n"+scoreBlack+"\n"+scoreWhite+"\n"+winner);
             }
         }
 
