@@ -66,6 +66,18 @@ namespace Othello
             possibleMoves();
         }
 
+       public TimeSpan elapsedWatch1()
+       {
+            TimeSpan ts = watch1.Elapsed;
+            return ts;
+       }
+        
+        public TimeSpan elapsedWatch2()
+        {
+            TimeSpan ts = watch2.Elapsed;
+            return ts;
+        }
+
         public int getBlackScore()
         {
             return getScore(playerColor.BLACK);
