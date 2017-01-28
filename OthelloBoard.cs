@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,6 +29,10 @@ namespace Othello
 
         private List<Tuple<int, int>> canMove;
 
+        //stopwatch to measure time of each player
+        private Stopwatch watch1;
+        private Stopwatch watch2;
+
         /**
          *  Constructor
          */
@@ -35,6 +40,9 @@ namespace Othello
         {
             board = new tileState[BOARDSIZE, BOARDSIZE];
             canMove = new List<Tuple<int, int>>();
+
+            watch1 = new Stopwatch();
+            watch2 = new Stopwatch();
 
             // Make the board empty
             for (int i = 0; i < BOARDSIZE; i++)
@@ -123,6 +131,11 @@ namespace Othello
                     turnPieces(x, y);
                     player = playerColor.WHITE;
                     possibleMoves();
+
+                    //start stopwatch of white player
+                    watch1.Start();
+                    watch2.Stop();
+
                     return true;
                 }
                 else
@@ -137,6 +150,11 @@ namespace Othello
                     turnPieces(x, y);
                     player = playerColor.BLACK;
                     possibleMoves();
+
+                    //start stopwatch of black player
+                    watch2.Start();
+                    watch1.Stop();
+
                     return true;
                 }
                 else
