@@ -53,17 +53,6 @@ namespace Othello
             //start timer
             myTimer.Start();
 
-
-            //Deserialize
-            BinaryFormatter binaryFmt = new BinaryFormatter();
-            FileStream fs = new FileStream
-                ("game.xml", FileMode.OpenOrCreate);
-            MainWindow p2 = (MainWindow)binaryFmt.Deserialize(fs);
-            fs.Close();
-
-            myBoard = p2.myBoard;
-            isWhite = p2.isWhite;
-
         }
 
         private void doSetup()
@@ -256,8 +245,6 @@ namespace Othello
                         winner = ("Black win!");
                     }
                     MessageBox.Show("--- END OF GAME --- \n" + scoreBlack + "\n" + scoreWhite + "\n" + winner);
-
-                    this.Close();
                 }
                 else
                 {
@@ -274,15 +261,6 @@ namespace Othello
             updateScoreWhite = "Score white " + myBoard.getWhiteScore().ToString();
         }
 
-        private void MyOthello_Closed(object sender, EventArgs e)
-        {
-            //Serialize
-            BinaryFormatter binaryFmt = new BinaryFormatter();
-            FileStream fs = new FileStream("game.xml", FileMode.Create);
-            binaryFmt.Serialize(fs, this);
-            fs.Close();
-
-        }
 
         /*-------------------------------------------------------
        * ISerializable functions
@@ -301,5 +279,46 @@ namespace Othello
             info.AddValue("iswhite", isWhite, typeof(bool));
         }
 
+        private void NewGame_Click(object sender, RoutedEventArgs e)
+        {
+            myBoard = new OthelloBoard();
+
+
+            //update the board gui
+            updateBoard();
+
+            //boolean Black/White => turn to turn
+            isWhite = false;
+
+            //start timer
+            myTimer.Start();
+        }
+        private void LoadGame_Click(object sender, RoutedEventArgs e)
+        {
+
+            //Deserialize
+            BinaryFormatter binaryFmt = new BinaryFormatter();
+            FileStream fs = new FileStream
+                ("game.xml", FileMode.OpenOrCreate);
+            MainWindow old_window = (MainWindow)binaryFmt.Deserialize(fs);
+            fs.Close();
+
+            myBoard = old_window.myBoard;
+            isWhite = old_window.isWhite;
+            updateBoard();
+        }
+        private void SaveGame_Click(object sender, RoutedEventArgs e)
+        {
+            //Serialize
+            BinaryFormatter binaryFmt = new BinaryFormatter();
+            FileStream fs = new FileStream("game.xml", FileMode.Create);
+            binaryFmt.Serialize(fs, this);
+            fs.Close();
+
+        }
+        private void Exit_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Othello"
         mc:Ignorable="d"
-        Title="Othello" Height="400" Width="724.254" Closed="MyOthello_Closed">
+        Title="Othello" Height="400" Width="724.254">
     <Grid x:Name="container">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"/>
@@ -77,9 +77,10 @@
         </Grid>
         <Menu x:Name="menu" DockPanel.Dock="Top" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="478">
             <MenuItem Header="Menu">
-                <MenuItem Header="new game"/>
-                <MenuItem Header="load game"/>
-                <MenuItem Header="Exit"/>
+                <MenuItem Header="new game" Click="NewGame_Click"/>
+                <MenuItem Header="load game" Click="LoadGame_Click"/>
+                <MenuItem Header="save game" Click="SaveGame_Click"/>
+                <MenuItem Header="Exit" Click="Exit_Click"/>
             </MenuItem>
         </Menu>
     </Grid>
