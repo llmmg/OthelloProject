@@ -100,7 +100,17 @@ namespace Othello
         {
             return board;
         }
-
+        public void passTurn()
+        {
+            if(player == playerColor.BLACK)
+            {
+                player = playerColor.WHITE;
+            }
+            else
+            {
+                player = playerColor.BLACK;
+            }
+        }
         public bool isPlayable(int column, int line, bool isWhite)
         {
 
@@ -722,32 +732,9 @@ namespace Othello
             }
         }
 
-        //test affichage
-        public string getString()
+        public List<Tuple<int, int>> getCanMove()
         {
-            string str = "X\t0 1 2 3 4 5 6 7\n";
-            for (int i = 0; i < BOARDSIZE; i++)
-            {
-                str += i + "\t";
-                for (int j = 0; j < BOARDSIZE; j++)
-                {
-                    if (board[i, j] == tileState.EMPTY)
-                    {
-                        if (canMove.Contains(new Tuple<int, int>(i, j)))
-                            str = str + "X";
-                        else
-                            str = str + "_";
-                    }
-                    else if (board[i, j] == tileState.BLACK)
-                        str = str + "B";
-                    else if (board[i, j] == tileState.WHITE)
-                        str = str + "W";
-
-                    str = str + " ";
-                }
-                str += "\n";
-            }
-            return str;
+            return canMove;
         }
         public string getPlayerString()
         {
