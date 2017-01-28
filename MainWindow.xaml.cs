@@ -26,8 +26,8 @@ namespace Othello
         //TODO: binder les grids avec des objets/fonctions pour qu'elles changent de couleurs (ou qu'une image s'affiche) lors d'un click
         //et selon les "etats" possibles
 
-        private OthelloBoard myBoard;
-        private bool isWhite;
+        public OthelloBoard myBoard;
+        public bool isWhite;
         private Rectangle[,] gridRects;
 
         //timer
@@ -51,6 +51,17 @@ namespace Othello
 
             //start timer
             myTimer.Start();
+
+
+            //Deserialize
+            BinaryFormatter binaryFmt = new BinaryFormatter();
+            FileStream fs = new FileStream
+                ("game.xml", FileMode.OpenOrCreate);
+            MainWindow p2 = (MainWindow)binaryFmt.Deserialize(fs);
+            fs.Close();
+
+            myBoard = p2.myBoard;
+            isWhite = p2.isWhite;
 
         }
 
@@ -257,11 +268,6 @@ namespace Othello
             binaryFmt.Serialize(fs, this);
             fs.Close();
 
-            //Deserialize
-            fs = new FileStream
-                ("game.xml", FileMode.OpenOrCreate);
-            MainWindow p2 = (MainWindow)binaryFmt.Deserialize(fs);
-            fs.Close();
         }
 
         /*-------------------------------------------------------

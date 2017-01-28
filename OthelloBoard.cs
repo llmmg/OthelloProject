@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Othello
 {
-    enum tileState
+    public enum tileState
     {
         WHITE,
         BLACK,
@@ -16,7 +16,7 @@ namespace Othello
     }
 
     [Serializable]
-    class OthelloBoard : IPlayable, ISerializable
+    public class OthelloBoard : IPlayable, ISerializable
     {
         private const int BOARDSIZE = 8;
 
