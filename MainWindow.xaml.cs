@@ -20,6 +20,8 @@ namespace Othello
         private bool isWhite;
         private Rectangle[,] gridRects;
 
+        //TODO:chrono
+
         public MainWindow()
         {
             InitializeComponent();
@@ -128,16 +130,8 @@ namespace Othello
             int posX = Grid.GetColumn(curRect);
             int posY = Grid.GetRow(curRect);
 
-            if(myBoard.playMove(posX, posY, isWhite))
-            {
-                if(isWhite)
-                {
-                    curRect.Fill = new SolidColorBrush(Colors.WhiteSmoke);
-                }else
-                {
-                    curRect.Fill = new SolidColorBrush(Colors.Black);
-                }
-            }
+            //play
+            myBoard.playMove(posX, posY, isWhite);
                 
             //other turn
             isWhite = !isWhite;
@@ -202,6 +196,8 @@ namespace Othello
                     winner = ("Black win!");
                 }
                 MessageBox.Show("--- END OF GAME --- \n"+scoreBlack+"\n"+scoreWhite+"\n"+winner);
+
+                this.Close();
             }
         }
 
