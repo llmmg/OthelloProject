@@ -1,11 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System.Diagnostics;
+using System.Windows.Threading;
 
 namespace Othello
 {
@@ -19,7 +20,11 @@ namespace Othello
 
         private OthelloBoard myBoard;
         private bool isWhite;
-        private Rectangle[,] gridRects;  
+        private Rectangle[,] gridRects;
+
+        //timer
+        private DispatcherTimer myTimer;
+        
 
 
         public MainWindow()
@@ -30,8 +35,14 @@ namespace Othello
 
             curentColor = new SolidColorBrush(Colors.Red);
 
+            //timer
+            myTimer = new DispatcherTimer();
+            myTimer.Tick += new EventHandler(TimerEventProcessor);
+            myTimer.Interval = new TimeSpan(0, 0, 1);
+            
+
             //Add rectangles to grid/xaml
-            for(int i=0;i<8;i++)
+            for (int i=0;i<8;i++)
             {
                 for(int j=0;j<8;j++)
                 {
@@ -68,7 +79,10 @@ namespace Othello
 
             //boolean Black/White => turn to turn
             isWhite = true;
- 
+
+            //start timer
+            myTimer.Start();
+
         }
 
         //Handler for dataBinding
@@ -121,6 +135,17 @@ namespace Othello
             ReColor = new SolidColorBrush(Colors.Red);
         }
 
+        //update time labels
+        private void TimerEventProcessor(Object myObject,EventArgs myEventArgs)
+        {
+            //white playtime
+            TimeSpan t = myBoard.elapsedWatch1();
+            time1.Content = String.Format("{0:00}:{1:00}", t.Minutes, t.Seconds);
+
+            //black playtime
+            TimeSpan t2 = myBoard.elapsedWatch2();
+            time2.Content = String.Format("{0:00}:{1:00}", t2.Minutes, t2.Seconds);
+        }
 
         //Event called by all rectangles
         private void onClick(object sender, MouseButtonEventArgs e)
@@ -138,6 +163,9 @@ namespace Othello
 
             //Update board colors
             updateBoard();
+
+            
+
 
             //TODO: Databinding to display score and who's turn to play
             
