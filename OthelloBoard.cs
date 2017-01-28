@@ -118,6 +118,7 @@ namespace Othello
             {
                 player = playerColor.BLACK;
             }
+            possibleMoves();
         }
         public bool isPlayable(int column, int line, bool isWhite)
         {
