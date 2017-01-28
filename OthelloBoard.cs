@@ -156,7 +156,7 @@ namespace Othello
             board = (tileState[,])info.GetValue("board", typeof(tileState[,]));
             offset1 = (TimeSpan)info.GetValue("time1", typeof(TimeSpan));
             watch1 = new Stopwatch();
-            offset2 = (TimeSpan)info.GetValue("time1", typeof(TimeSpan));
+            offset2 = (TimeSpan)info.GetValue("time2", typeof(TimeSpan));
             watch2 = new Stopwatch();
 
             canMove = new List<Tuple<int, int>>();
