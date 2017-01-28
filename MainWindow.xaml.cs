@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
@@ -203,6 +204,24 @@ namespace Othello
                     }
                 }
             }
+
+            //update playerTurn display
+            ImageSource src;
+            
+            //get image            
+            if (isWhite)
+            {
+                src = new BitmapImage(new Uri("../../Ressources/white.png", UriKind.Relative));
+
+            }
+            else
+            {
+                src = new BitmapImage(new Uri("../../Ressources/black.png",UriKind.Relative));
+            }
+            //set image
+            ImageBrush brsh = new ImageBrush(src);
+            brsh.Stretch = Stretch.Uniform;
+            playerTurn.Fill = brsh;
 
 
             if(myBoard.getCanMove().Count == 0)
