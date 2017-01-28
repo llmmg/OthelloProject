@@ -305,6 +305,7 @@ namespace Othello
 
             myBoard = old_window.myBoard;
             isWhite = old_window.isWhite;
+            old_window.Close();
             updateBoard();
         }
         private void SaveGame_Click(object sender, RoutedEventArgs e)
@@ -318,7 +319,7 @@ namespace Othello
         }
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
-
+            this.Close();
         }
     }
 }
