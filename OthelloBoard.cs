@@ -14,18 +14,12 @@ namespace Othello
         EMPTY
     }
 
-    enum playerColor
-    {
-        BLACK,
-        WHITE
-    }
-
+    [Serializable()]
     class OthelloBoard : IPlayable
     {
         private const int BOARDSIZE = 8;
 
         private tileState[,] board;     // X = Line     Y = Column
-        private playerColor player;
 
         private List<Tuple<int, int>> canMove;
 
@@ -52,9 +46,7 @@ namespace Othello
                     board[i, j] = tileState.EMPTY;
                 }
             }
-
-            // Black always start
-            player = playerColor.BLACK;
+            
 
             // Setup first pieces
             board[3, 3] = tileState.BLACK;
@@ -62,8 +54,8 @@ namespace Othello
             board[4, 4] = tileState.BLACK;
             board[4, 3] = tileState.WHITE;
 
-            // Get the possible moves
-            possibleMoves();
+            // Get the possible moves (black always start)
+            possibleMoves(false);
         }
 
        public TimeSpan elapsedWatch1()
@@ -77,65 +69,13 @@ namespace Othello
             TimeSpan ts = watch2.Elapsed;
             return ts;
         }
-
-        public int getBlackScore()
-        {
-            return getScore(playerColor.BLACK);
-        }
-
-        public int getWhiteScore()
-        {
-            return getScore(playerColor.WHITE);
-        }
-
-        private int getScore(playerColor color)
-        {
-            tileState tileColor;
-            int score = 0;
-
-            if (color == playerColor.BLACK)
-                tileColor = tileState.BLACK;
-            else
-                tileColor = tileState.WHITE;
-
-            for (int i = 0; i < BOARDSIZE; i++)
-            {
-                for (int j = 0; j < BOARDSIZE; j++)
-                {
-                    if (board[i, j] == tileColor)
-                        score++;
-                }
-            }
-
-            return score;
-        }
-
-        public Tuple<char, int> getNextMove(int[,] game, int level, bool whiteTurn)
-        {
-            throw new NotImplementedException();
-        }
-
-        //test method that return state of the board (to update pieces after a move)
-        public tileState[,] getState()
-        {
-            return board;
-        }
-        public void passTurn()
-        {
-            if(player == playerColor.BLACK)
-            {
-                player = playerColor.WHITE;
-            }
-            else
-            {
-                player = playerColor.BLACK;
-            }
-            possibleMoves();
-        }
+        /*-------------------------------------------------------
+         * Iplayable functions
+         -------------------------------------------------------- */
         public bool isPlayable(int column, int line, bool isWhite)
         {
-
             Tuple<int, int> pos = new Tuple<int, int>(column, line);
+            possibleMoves(isWhite);
             return canMove.Contains(pos);
         }
 
@@ -145,34 +85,15 @@ namespace Othello
             int y = line;
 
             Tuple<int, int> pos = new Tuple<int, int>(x, y);
-            // Black turn
-            if (player == playerColor.BLACK)
-            {
-                if (canMove.Contains(pos))
-                {
-                    board[x, y] = tileState.BLACK;
-                    turnPieces(x, y);
-                    player = playerColor.WHITE;
-                    possibleMoves();
 
-                    //start stopwatch of white player
-                    watch1.Start();
-                    watch2.Stop();
-
-                    return true;
-                }
-                else
-                    return false;
-            }
-            // White turn
-            else
-            {
+            if (isWhite)
+            { 
+                possibleMoves(isWhite);
                 if (canMove.Contains(pos))
                 {
                     board[x, y] = tileState.WHITE;
-                    turnPieces(x, y);
-                    player = playerColor.BLACK;
-                    possibleMoves();
+                    turnPieces(x, y, isWhite);
+                    possibleMoves(!isWhite);
 
                     //start stopwatch of black player
                     watch2.Start();
@@ -183,9 +104,46 @@ namespace Othello
                 else
                     return false;
             }
+            else
+            {
+                possibleMoves(isWhite);
+                if (canMove.Contains(pos))
+                {
+                    board[x, y] = tileState.BLACK;
+                    turnPieces(x, y, isWhite);
+                    possibleMoves(!isWhite);
+
+                    //start stopwatch of white player
+                    watch1.Start();
+                    watch2.Stop();
+
+                    return true;
+                }
+                else
+                    return false;
+            }
         }
 
-        private void turnPieces(int x, int y)
+        public Tuple<char, int> getNextMove(int[,] game, int level, bool whiteTurn)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int getBlackScore()
+        {
+            return calculateScore(tileState.BLACK);
+        }
+
+        public int getWhiteScore()
+        {
+            return calculateScore(tileState.WHITE);
+        }
+
+        /*-------------------------------------------------------
+         * Class functions
+         -------------------------------------------------------- */
+
+        private void turnPieces(int x, int y, bool isWhite)
         {
             tileState color;
             tileState ennemyColor;
@@ -204,7 +162,7 @@ namespace Othello
             bool turnSouthWest = false;
 
             // Setup the colors we need to check
-            if (player == playerColor.BLACK)
+            if (!isWhite)
             {
                 color = tileState.BLACK;
                 ennemyColor = tileState.WHITE;
@@ -510,7 +468,7 @@ namespace Othello
             }
         }
 
-        private void possibleMoves()
+        public void possibleMoves(bool isWhite)
         {
             tileState color;
             tileState ennemyColor;
@@ -520,7 +478,7 @@ namespace Othello
             canMove.Clear();
 
             // Setup the colors we need to check
-            if (player == playerColor.BLACK)
+            if (!isWhite)
             {
                 color = tileState.BLACK;
                 ennemyColor = tileState.WHITE;
@@ -762,14 +720,47 @@ namespace Othello
                 }
             }
         }
+        private int calculateScore(tileState tileColor)
+        {
+            int score = 0;
+
+            for (int i = 0; i < BOARDSIZE; i++)
+            {
+                for (int j = 0; j < BOARDSIZE; j++)
+                {
+                    if (board[i, j] == tileColor)
+                        score++;
+                }
+            }
+
+            return score;
+        }
+
+        public void save(bool isWhite)
+        {
+            // board + temps + isWhite
+            // convert multidimensionnal array to jagged array
+
+        }
+
+        public void load(string path)
+        {
+
+        }
+
+
+        /*-------------------------------------------------------
+         * Getters and Setters
+         -------------------------------------------------------- */
+        //test method that return state of the board (to update pieces after a move)
+        public tileState[,] getState()
+        {
+            return board;
+        }
 
         public List<Tuple<int, int>> getCanMove()
         {
             return canMove;
-        }
-        public string getPlayerString()
-        {
-            return player.ToString();
         }
     }
 }

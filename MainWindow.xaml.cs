@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.ComponentModel;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,6 +16,8 @@ namespace Othello
     /// <summary>
     /// Logique d'interaction pour MainWindow.xaml
     /// </summary>
+    
+    [Serializable()]
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         //TODO: binder les grids avec des objets/fonctions pour qu'elles changent de couleurs (ou qu'une image s'affiche) lors d'un click
@@ -70,7 +75,7 @@ namespace Othello
             updateBoard();
 
             //boolean Black/White => turn to turn
-            isWhite = true;
+            isWhite = false;
 
             //start timer
             myTimer.Start();
@@ -148,10 +153,12 @@ namespace Othello
             int posY = Grid.GetRow(curRect);
 
             //play
-            myBoard.playMove(posX, posY, isWhite);
+            if(myBoard.playMove(posX, posY, isWhite))
+            {
+                //other turn
+                isWhite = !isWhite;
+            }
                 
-            //other turn
-            isWhite = !isWhite;
 
             //Update board colors
             updateBoard();
@@ -200,7 +207,8 @@ namespace Othello
 
             if(myBoard.getCanMove().Count == 0)
             {
-                myBoard.passTurn();
+                
+                myBoard.possibleMoves(!isWhite);
                 // Both players cant play
                 if(myBoard.getCanMove().Count == 0)
                 {
@@ -220,42 +228,39 @@ namespace Othello
                 else
                 {
                     MessageBox.Show("Can't play, pass turn");
+                    isWhite = !isWhite;
                     updateBoard();
                 }
+            }
+        }
+        private void writeObject(string path)
+        {
+            FileStream fs = null;
+            ArrayList al = new ArrayList();
+            try
+            {
+                fs = new FileStream(path, FileMode.Create, FileAccess.Write);
+                BinaryFormatter bf = new BinaryFormatter();
+                bf.Serialize(fs, myBoard);
+
+            }
+            catch (Exception e) { Console.WriteLine(e.Message); }
+            finally
+            {
+                fs.Close();
+
             }
         }
 
         private void updateScores(object sender, MouseButtonEventArgs e)
         {
-            updateScoreBlack = "Score black "+myBoard.getBlackScore().ToString();
-            updateScoreWhite = "Score white "+myBoard.getWhiteScore().ToString();
-        }
-    }
-    public class TestOthello : IPlayable
-    {
-        public int getBlackScore()
-        {
-            throw new NotImplementedException();
+            updateScoreBlack = "Score black " + myBoard.getBlackScore().ToString();
+            updateScoreWhite = "Score white " + myBoard.getWhiteScore().ToString();
         }
 
-        public Tuple<char, int> getNextMove(int[,] game, int level, bool whiteTurn)
+        private void MyOthello_Closed(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
-        }
-
-        public int getWhiteScore()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool isPlayable(int column, int line, bool isWhite)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool playMove(int column, int line, bool isWhite)
-        {
-            throw new NotImplementedException();
+            writeObject("serialized.xml");
         }
     }
 }
