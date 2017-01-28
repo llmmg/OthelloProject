@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,8 +15,8 @@ namespace Othello
         EMPTY
     }
 
-    [Serializable()]
-    class OthelloBoard : IPlayable
+    [Serializable]
+    class OthelloBoard : IPlayable, ISerializable
     {
         private const int BOARDSIZE = 8;
 
@@ -24,6 +25,8 @@ namespace Othello
         private List<Tuple<int, int>> canMove;
 
         //stopwatch to measure time of each player
+        private TimeSpan offset1;
+        private TimeSpan offset2;
         private Stopwatch watch1;
         private Stopwatch watch2;
 
@@ -34,6 +37,9 @@ namespace Othello
         {
             board = new tileState[BOARDSIZE, BOARDSIZE];
             canMove = new List<Tuple<int, int>>();
+
+            offset1 = new TimeSpan(0);
+            offset2 = new TimeSpan(0);
 
             watch1 = new Stopwatch();
             watch2 = new Stopwatch();
@@ -60,15 +66,16 @@ namespace Othello
 
        public TimeSpan elapsedWatch1()
        {
-            TimeSpan ts = watch1.Elapsed;
+            TimeSpan ts = watch1.Elapsed + offset1;
             return ts;
        }
         
         public TimeSpan elapsedWatch2()
         {
-            TimeSpan ts = watch2.Elapsed;
+            TimeSpan ts = watch2.Elapsed + offset2;
             return ts;
         }
+        
         /*-------------------------------------------------------
          * Iplayable functions
          -------------------------------------------------------- */
@@ -138,6 +145,31 @@ namespace Othello
         {
             return calculateScore(tileState.WHITE);
         }
+
+
+
+        /*-------------------------------------------------------
+         * ISerializable functions
+         -------------------------------------------------------- */
+        public OthelloBoard(SerializationInfo info, StreamingContext context)
+        {
+            board = (tileState[,])info.GetValue("board", typeof(tileState[,]));
+            offset1 = (TimeSpan)info.GetValue("time1", typeof(TimeSpan));
+            watch1 = new Stopwatch();
+            offset2 = (TimeSpan)info.GetValue("time1", typeof(TimeSpan));
+            watch2 = new Stopwatch();
+
+            canMove = new List<Tuple<int, int>>();
+
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("board", board, typeof(tileState[,]));
+            info.AddValue("time1", elapsedWatch1(), typeof(TimeSpan));
+            info.AddValue("time2", elapsedWatch2(), typeof(TimeSpan));
+        }
+
 
         /*-------------------------------------------------------
          * Class functions
@@ -736,19 +768,6 @@ namespace Othello
             return score;
         }
 
-        public void save(bool isWhite)
-        {
-            // board + temps + isWhite
-            // convert multidimensionnal array to jagged array
-
-        }
-
-        public void load(string path)
-        {
-
-        }
-
-
         /*-------------------------------------------------------
          * Getters and Setters
          -------------------------------------------------------- */
@@ -762,5 +781,6 @@ namespace Othello
         {
             return canMove;
         }
+
     }
 }

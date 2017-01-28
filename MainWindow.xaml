@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Othello"
         mc:Ignorable="d"
-        Title="Othello" Height="400" Width="724.254">
+        Title="Othello" Height="400" Width="724.254" Closed="MyOthello_Closed">
     <Grid x:Name="container">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"/>
