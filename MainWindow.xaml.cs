@@ -38,7 +38,7 @@ namespace Othello
             //timer
             myTimer = new DispatcherTimer();
             myTimer.Tick += new EventHandler(TimerEventProcessor);
-            myTimer.Interval = new TimeSpan(0, 0, 1);
+            myTimer.Interval = new TimeSpan(0, 0, 0,0,500);
             
 
             //Add rectangles to grid/xaml
