@@ -95,7 +95,6 @@ namespace Othello
                     Grid.SetColumn(rect, i);
                     Grid.SetRow(rect, j);
                     rect.MouseLeftButtonDown += new MouseButtonEventHandler(onClick);
-                    rect.MouseDown += new MouseButtonEventHandler(updateScores);
                     //add in rectsArray
                     gridRects[i, j] = rect;
                 }
@@ -192,10 +191,9 @@ namespace Othello
         }
         private void updateBoard()
         {
-           tileState[,] state= myBoard.getState();
-
+            tileState[,] state= myBoard.getState();
+            updateScores();
             //test for when one color can't be played before end of game
-            int playableCount = 0;
 
             for(int i=0;i<8;i++)
             {
@@ -214,9 +212,6 @@ namespace Othello
                     if(myBoard.isPlayable(i,j,isWhite))
                     {
                         gridRects[i, j].Fill = new SolidColorBrush(Colors.LightGreen);
-                        
-                        //imcrement counter
-                        playableCount++;
 
                     }else if(state[i,j]==tileState.EMPTY)
                     {
@@ -273,7 +268,7 @@ namespace Othello
             }
         }
 
-        private void updateScores(object sender, MouseButtonEventArgs e)
+        private void updateScores()
         {
             updateScoreBlack = "Score black " + myBoard.getBlackScore().ToString();
             updateScoreWhite = "Score white " + myBoard.getWhiteScore().ToString();
