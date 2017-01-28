@@ -176,7 +176,15 @@ namespace Othello
                     }
                 }
             }
-            if(playableCount==0)
+            // Pass if blocked
+            if(myBoard.getCanMove().Count == 0 && myBoard.getBlackScore() + myBoard.getWhiteScore() < 64)
+            {
+                myBoard.passTurn();
+                MessageBox.Show("Can't play, pass turn");
+            }
+
+            // End of the game
+            if(myBoard.getBlackScore() + myBoard.getWhiteScore() == 64)
             {
                 string winner="";
                 if (myBoard.getBlackScore() < myBoard.getWhiteScore())
