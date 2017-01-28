@@ -50,15 +50,6 @@ namespace Othello
                     rect.Fill = new SolidColorBrush(Colors.Green);
                     rect.Stroke = new SolidColorBrush(Colors.Black);
 
-                    //preset pieces colors
-                    if((i==3 && j==3) ||(i==4 && j==4))
-                    {
-                        rect.Fill = new SolidColorBrush(Colors.WhiteSmoke);
-
-                    }else if((i ==4  && j == 3) || (i == 3 && j == 4))
-                    {
-                        rect.Fill = new SolidColorBrush(Colors.Black);
-                    }
                     //add to grid
                     theGrid.Children.Add(rect);
                                     
@@ -74,7 +65,8 @@ namespace Othello
 
             //TEST OthelloBoard
             myBoard = new OthelloBoard();
-            //update for playables areas
+
+            //update the board gui
             updateBoard();
 
             //boolean Black/White => turn to turn
@@ -204,11 +196,32 @@ namespace Othello
                     }
                 }
             }
-            // Pass if blocked
-            if(myBoard.getCanMove().Count == 0 && myBoard.getBlackScore() + myBoard.getWhiteScore() < 64)
+
+
+            if(myBoard.getCanMove().Count == 0)
             {
                 myBoard.passTurn();
-                MessageBox.Show("Can't play, pass turn");
+                // Both players cant play
+                if(myBoard.getCanMove().Count == 0)
+                {
+                    string winner = "";
+                    if (myBoard.getBlackScore() < myBoard.getWhiteScore())
+                    {
+                        winner = ("White win!");
+                    }
+                    else
+                    {
+                        winner = ("Black win!");
+                    }
+                    MessageBox.Show("--- END OF GAME --- \n" + scoreBlack + "\n" + scoreWhite + "\n" + winner);
+
+                    this.Close();
+                }
+                else
+                {
+                    MessageBox.Show("Can't play, pass turn");
+                    updateBoard();
+                }
             }
 
             // End of the game
@@ -233,23 +246,6 @@ namespace Othello
         {
             updateScoreBlack = "Score black "+myBoard.getBlackScore().ToString();
             updateScoreWhite = "Score white "+myBoard.getWhiteScore().ToString();
-        }
-        //DEPRECATED - used for/by databinding
-        private void rect00_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            ReColor = new SolidColorBrush(Colors.Red);
-        }
-
-        //DEPRECATED - used for/by databinding
-        private void rect10_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            ReColor = new SolidColorBrush(Colors.Red);
-        }
-
-        //DEPRECATED - used for/by databinding
-        private void rect20_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            ReColor = new SolidColorBrush(Colors.Red);
         }
     }
     public class TestOthello : IPlayable
