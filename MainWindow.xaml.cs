@@ -2,6 +2,7 @@
 using System.Collections;
 using System.ComponentModel;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Windows;
@@ -10,6 +11,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace Othello
 {
@@ -17,8 +20,8 @@ namespace Othello
     /// Logique d'interaction pour MainWindow.xaml
     /// </summary>
     
-    [Serializable()]
-    public partial class MainWindow : Window, INotifyPropertyChanged
+    [Serializable]
+    public partial class MainWindow : Window, INotifyPropertyChanged, ISerializable
     {
         //TODO: binder les grids avec des objets/fonctions pour qu'elles changent de couleurs (ou qu'une image s'affiche) lors d'un click
         //et selon les "etats" possibles
@@ -34,42 +37,11 @@ namespace Othello
 
         public MainWindow()
         {
-            InitializeComponent();
-
-            gridRects = new Rectangle[8,8];
-
-            curentColor = new SolidColorBrush(Colors.Red);
-
-            //timer
-            myTimer = new DispatcherTimer();
-            myTimer.Tick += new EventHandler(TimerEventProcessor);
-            myTimer.Interval = new TimeSpan(0, 0, 0,0,500);
-            
-
-            //Add rectangles to grid/xaml
-            for (int i=0;i<8;i++)
-            {
-                for(int j=0;j<8;j++)
-                {
-                    Rectangle rect = new Rectangle();
-                    rect.Fill = new SolidColorBrush(Colors.Green);
-                    rect.Stroke = new SolidColorBrush(Colors.Black);
-
-                    //add to grid
-                    theGrid.Children.Add(rect);
-                                    
-                    Grid.SetColumn(rect, i);
-                    Grid.SetRow(rect, j);
-                    rect.MouseLeftButtonDown += new MouseButtonEventHandler(onClick);
-                    rect.MouseDown += new MouseButtonEventHandler(updateScores);
-                    //add in rectsArray
-                    gridRects[i,j] = rect;
-                }
-                   
-            }
+            doSetup();
 
             //TEST OthelloBoard
             myBoard = new OthelloBoard();
+            
 
             //update the board gui
             updateBoard();
@@ -80,6 +52,43 @@ namespace Othello
             //start timer
             myTimer.Start();
 
+        }
+
+        private void doSetup()
+        {
+            InitializeComponent();
+
+            gridRects = new Rectangle[8, 8];
+
+            curentColor = new SolidColorBrush(Colors.Red);
+
+            //timer
+            myTimer = new DispatcherTimer();
+            myTimer.Tick += new EventHandler(TimerEventProcessor);
+            myTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);
+
+
+            //Add rectangles to grid/xaml
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    Rectangle rect = new Rectangle();
+                    rect.Fill = new SolidColorBrush(Colors.Green);
+                    rect.Stroke = new SolidColorBrush(Colors.Black);
+
+                    //add to grid
+                    theGrid.Children.Add(rect);
+
+                    Grid.SetColumn(rect, i);
+                    Grid.SetRow(rect, j);
+                    rect.MouseLeftButtonDown += new MouseButtonEventHandler(onClick);
+                    rect.MouseDown += new MouseButtonEventHandler(updateScores);
+                    //add in rectsArray
+                    gridRects[i, j] = rect;
+                }
+
+            }
         }
 
         //Handler for dataBinding
@@ -233,24 +242,6 @@ namespace Othello
                 }
             }
         }
-        private void writeObject(string path)
-        {
-            FileStream fs = null;
-            ArrayList al = new ArrayList();
-            try
-            {
-                fs = new FileStream(path, FileMode.Create, FileAccess.Write);
-                BinaryFormatter bf = new BinaryFormatter();
-                bf.Serialize(fs, myBoard);
-
-            }
-            catch (Exception e) { Console.WriteLine(e.Message); }
-            finally
-            {
-                fs.Close();
-
-            }
-        }
 
         private void updateScores(object sender, MouseButtonEventArgs e)
         {
@@ -260,7 +251,35 @@ namespace Othello
 
         private void MyOthello_Closed(object sender, EventArgs e)
         {
-            writeObject("serialized.xml");
+            //Serialize
+            BinaryFormatter binaryFmt = new BinaryFormatter();
+            FileStream fs = new FileStream("game.xml", FileMode.Create);
+            binaryFmt.Serialize(fs, this);
+            fs.Close();
+
+            //Deserialize
+            fs = new FileStream
+                ("game.xml", FileMode.OpenOrCreate);
+            MainWindow p2 = (MainWindow)binaryFmt.Deserialize(fs);
+            fs.Close();
         }
+
+        /*-------------------------------------------------------
+       * ISerializable functions
+       -------------------------------------------------------- */
+        public MainWindow(SerializationInfo info, StreamingContext context)
+        {
+            doSetup();
+            myBoard = (OthelloBoard)info.GetValue("othelloboard", typeof(OthelloBoard));
+            isWhite = (bool)info.GetValue("iswhite", typeof(bool));
+
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("othelloboard", myBoard, typeof(OthelloBoard));
+            info.AddValue("iswhite", isWhite, typeof(bool));
+        }
+
     }
 }
