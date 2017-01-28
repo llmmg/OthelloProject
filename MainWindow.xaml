@@ -62,14 +62,25 @@
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
-            <Label x:Name="lblScoreB" Content="{Binding updateScoreBlack, ElementName=MyOthello}" HorizontalAlignment="Center" Margin="10" VerticalAlignment="Center"/>
-            <Label x:Name="lblScoreW" Content="{Binding updateScoreWhite, ElementName=MyOthello}" HorizontalAlignment="Center" Margin="10" VerticalAlignment="Center" Grid.Column="1"/>
+            <Label x:Name="lblScoreB" Content="{Binding updateScoreBlack, ElementName=MyOthello}" VerticalContentAlignment="Stretch"/>
+            <Label x:Name="lblScoreW" Content="{Binding updateScoreWhite, ElementName=MyOthello}" Grid.Column="1"/>
             <Label Content="time black" HorizontalAlignment="Center" VerticalAlignment="Bottom" Grid.Row="1" Height="25"/>
             <Label Content="time white" HorizontalAlignment="Center" VerticalAlignment="Bottom" Grid.Row="1" Grid.Column="1"/>
             <Label x:Name="time2" Content="TimerB" HorizontalAlignment="Center" Margin="10" VerticalAlignment="Center" Grid.Row="2" BorderThickness="0"/>
             <Label x:Name="time1" Content="TimerW" HorizontalAlignment="Center" Margin="10" VerticalAlignment="Center" Grid.Column="1" Grid.Row="2" Width="52"/>
             <Label Content="Player turn" Grid.Row="4" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <Label x:Name="playerTurn" Content="Player turn" Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+            <Rectangle x:Name="playerTurn" Grid.Row="4" Grid.Column="1" UseLayoutRounding="False" RenderTransformOrigin="0.5,0.5">
+                <Rectangle.Fill>
+                    <ImageBrush ImageSource="Ressources/black.png" Stretch="Uniform"/>
+                </Rectangle.Fill>
+            </Rectangle>
         </Grid>
+        <Menu x:Name="menu" DockPanel.Dock="Top" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="478">
+            <MenuItem Header="Menu">
+                <MenuItem Header="new game"/>
+                <MenuItem Header="load game"/>
+                <MenuItem Header="Exit"/>
+            </MenuItem>
+        </Menu>
     </Grid>
 </Window>
