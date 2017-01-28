@@ -223,23 +223,6 @@ namespace Othello
                     updateBoard();
                 }
             }
-
-            // End of the game
-            if(myBoard.getBlackScore() + myBoard.getWhiteScore() == 64)
-            {
-                string winner="";
-                if (myBoard.getBlackScore() < myBoard.getWhiteScore())
-                {
-                    winner = ("White win!");
-                }
-                else
-                {
-                    winner = ("Black win!");
-                }
-                MessageBox.Show("--- END OF GAME --- \n"+scoreBlack+"\n"+scoreWhite+"\n"+winner);
-
-                this.Close();
-            }
         }
 
         private void updateScores(object sender, MouseButtonEventArgs e)
