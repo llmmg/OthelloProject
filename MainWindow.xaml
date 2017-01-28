@@ -75,5 +75,12 @@
                 </Rectangle.Fill>
             </Rectangle>
         </Grid>
+        <Menu x:Name="menu" DockPanel.Dock="Top" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="478">
+            <MenuItem Header="Menu">
+                <MenuItem Header="new game"/>
+                <MenuItem Header="load game"/>
+                <MenuItem Header="Exit"/>
+            </MenuItem>
+        </Menu>
     </Grid>
 </Window>
