@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Othello"
         mc:Ignorable="d"
-        Title="Othello" Height="400" Width="724.254" KeyDown="MyOthello_KeyDown">
+        Title="Othello" Height="444" Width="724.254" KeyDown="MyOthello_KeyDown">
     <Window.Background>
         <ImageBrush ImageSource="Ressources/wood.jpg"/>
     </Window.Background>
