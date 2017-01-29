@@ -18,7 +18,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
-        <Grid x:Name="theGrid" Margin="30,30,30,29.667" HorizontalAlignment="Stretch" MinWidth="200" MinHeight="199">
+        <Grid x:Name="theGrid" Margin="30,30,30,29.667" HorizontalAlignment="Stretch" MinWidth="200" MinHeight="199" Background="Green">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="1*"/>
