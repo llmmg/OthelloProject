@@ -7,6 +7,9 @@
         xmlns:local="clr-namespace:Othello"
         mc:Ignorable="d"
         Title="Othello" Height="400" Width="724.254">
+    <Window.Background>
+        <ImageBrush ImageSource="Ressources/wood.jpg"/>
+    </Window.Background>
     <Grid x:Name="container">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"/>
@@ -38,6 +41,9 @@
             </Grid.RowDefinitions>
         </Grid>
         <Grid x:Name="gridResult" Margin="20" Grid.Column="1" UseLayoutRounding="False">
+            <Grid.Background>
+                <SolidColorBrush Color="#FFCDCACA" Opacity="0.595"/>
+            </Grid.Background>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="1*"/>
@@ -63,7 +69,10 @@
                 </Rectangle.Fill>
             </Rectangle>
         </Grid>
-        <Menu x:Name="menu" DockPanel.Dock="Top" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="478">
+        <Menu x:Name="menu" DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left">
+            <Menu.Background>
+                <SolidColorBrush Color="#FFF0F0F0" Opacity="0.605"/>
+            </Menu.Background>
             <MenuItem Header="Menu">
                 <MenuItem Header="new game" Click="NewGame_Click"/>
                 <MenuItem Header="load game" Click="LoadGame_Click"/>
