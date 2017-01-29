@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -288,6 +289,7 @@ namespace Othello
             doSetup();
             myBoard = (OthelloBoard)info.GetValue("othelloboard", typeof(OthelloBoard));
             isWhite = (bool)info.GetValue("iswhite", typeof(bool));
+            undoList = (Stack<MemoryStream>)info.GetValue("undoList", typeof(Stack<MemoryStream>));
 
         }
 
@@ -295,6 +297,7 @@ namespace Othello
         {
             info.AddValue("othelloboard", myBoard, typeof(OthelloBoard));
             info.AddValue("iswhite", isWhite, typeof(bool));
+            info.AddValue("undoList", undoList, typeof(Stack<MemoryStream>));
         }
 
 
@@ -305,39 +308,56 @@ namespace Othello
         {
             myBoard = new OthelloBoard();
 
+            undoList = new Stack<MemoryStream>();
+
+            //boolean Black/White => turn to turn
+            isWhite = false;
 
             //update the board gui
             updateBoard();
 
-            //boolean Black/White => turn to turn
-            isWhite = false;
 
             //start timer
             myTimer.Start();
         }
         private void LoadGame_Click(object sender, RoutedEventArgs e)
         {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Title = "Load game";
+            openFileDialog1.ShowDialog();
 
-            //Deserialize
-            BinaryFormatter binaryFmt = new BinaryFormatter();
-            FileStream fs = new FileStream
-                ("game.xml", FileMode.OpenOrCreate);
-            MainWindow old_window = (MainWindow)binaryFmt.Deserialize(fs);
-            fs.Close();
+            if (openFileDialog1.FileName != "")
+            {
+                //Deserialize
+                BinaryFormatter binaryFmt = new BinaryFormatter();
+                FileStream fs = new FileStream
+                    (openFileDialog1.FileName, FileMode.OpenOrCreate);
+                MainWindow old_window = (MainWindow)binaryFmt.Deserialize(fs);
+                fs.Close();
 
-            myBoard = old_window.myBoard;
-            isWhite = old_window.isWhite;
-            old_window.Close();
-            updateBoard();
+                myBoard = old_window.myBoard;
+                isWhite = old_window.isWhite;
+                undoList = old_window.undoList;
+                old_window.Close();
+                updateBoard();
+            }
         }
         private void SaveGame_Click(object sender, RoutedEventArgs e)
         {
-            //Serialize
-            BinaryFormatter binaryFmt = new BinaryFormatter();
-            FileStream fs = new FileStream("game.xml", FileMode.Create);
-            binaryFmt.Serialize(fs, this);
-            
-            fs.Close();
+
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+            saveFileDialog1.Title = "Save game";
+
+            saveFileDialog1.ShowDialog();
+            if (saveFileDialog1.FileName != "")
+            {
+                //Serialize
+                BinaryFormatter binaryFmt = new BinaryFormatter();
+                FileStream fs = new FileStream(saveFileDialog1.FileName, FileMode.Create);
+                binaryFmt.Serialize(fs, this);
+
+                fs.Close();
+            }
 
         }
         private void Exit_Click(object sender, RoutedEventArgs e)
