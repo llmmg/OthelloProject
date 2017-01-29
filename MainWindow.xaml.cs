@@ -369,5 +369,13 @@ namespace Othello
             }
 
         }
+
+        private void MyOthello_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Z && (Keyboard.Modifiers  == ModifierKeys.Control))
+            {
+                Undo_Click(null, null);
+            }
+        }
     }
 }
