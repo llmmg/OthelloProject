@@ -70,6 +70,7 @@
                 <MenuItem Header="save game" Click="SaveGame_Click"/>
                 <MenuItem Header="Exit" Click="Exit_Click"/>
             </MenuItem>
+            <MenuItem Header="Undo" Click="Undo_Click"></MenuItem>
         </Menu>
     </Grid>
 </Window>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.Serialization;
@@ -29,6 +30,7 @@ namespace Othello
 
         public OthelloBoard myBoard;
         public bool isWhite;
+        private Stack<MemoryStream> undoList;
         private Rectangle[,] gridRects;
 
         //timer
@@ -62,6 +64,8 @@ namespace Othello
             gridRects = new Rectangle[8, 8];
 
             curentColor = new SolidColorBrush(Colors.Red);
+
+            undoList = new Stack<MemoryStream>();
 
             //timer
             myTimer = new DispatcherTimer();
@@ -135,11 +139,7 @@ namespace Othello
                 PropertyChanged(this, new PropertyChangedEventArgs(info));
             }
         }
-        // --databinding
-        public void doColor(object sender)
-        {
-            ReColor = new SolidColorBrush(Colors.Red);
-        }
+
 
         //update time labels
         private void TimerEventProcessor(Object myObject,EventArgs myEventArgs)
@@ -160,12 +160,20 @@ namespace Othello
             //MessageBox.Show("col(x)= "+ Grid.GetColumn(curRect)+ " row(y)="+ Grid.GetRow(curRect));
             int posX = Grid.GetColumn(curRect);
             int posY = Grid.GetRow(curRect);
+            
+            // Save board state before trying to play a move
+            BinaryFormatter binaryFmt = new BinaryFormatter();
+            MemoryStream ms = new MemoryStream();
+            binaryFmt.Serialize(ms, myBoard);
 
             //play
-            if(myBoard.playMove(posX, posY, isWhite))
+            if (myBoard.playMove(posX, posY, isWhite))
             {
                 //other turn
                 isWhite = !isWhite;
+
+                // add board to undo list
+                undoList.Push(ms);
             }
                 
 
@@ -179,7 +187,7 @@ namespace Othello
             
         }
         private void updateBoard()
-        {
+        { 
             tileState[,] state= myBoard.getState();
             updateScores();
             //test for when one color can't be played before end of game
@@ -279,6 +287,10 @@ namespace Othello
             info.AddValue("iswhite", isWhite, typeof(bool));
         }
 
+
+       /*-------------------------------------------------------
+       * Menu Actions
+       -------------------------------------------------------- */
         private void NewGame_Click(object sender, RoutedEventArgs e)
         {
             myBoard = new OthelloBoard();
@@ -314,12 +326,30 @@ namespace Othello
             BinaryFormatter binaryFmt = new BinaryFormatter();
             FileStream fs = new FileStream("game.xml", FileMode.Create);
             binaryFmt.Serialize(fs, this);
+            
             fs.Close();
 
         }
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        private void Undo_Click(object sender, RoutedEventArgs e)
+        {
+            if(undoList.Count > 0)
+            {
+                BinaryFormatter binaryFmt = new BinaryFormatter();
+                MemoryStream ms = undoList.Pop();
+                ms.Position = 0;
+                
+                OthelloBoard new_board = (OthelloBoard) binaryFmt.Deserialize(ms);
+                myBoard = new_board;
+                isWhite = !isWhite;
+               // myBoard.possibleMoves(isWhite);
+                updateBoard();
+            }
+
         }
     }
 }
