@@ -190,19 +190,30 @@ namespace Othello
         { 
             tileState[,] state= myBoard.getState();
             updateScores();
-            //test for when one color can't be played before end of game
+            
+            //case image
+            ImageSource src;
+            ImageBrush brsh;
 
-            for(int i=0;i<8;i++)
+            for (int i=0;i<8;i++)
             {
                 for(int j=0;j<8;j++)
                 {
                     //apply correct color
                     if(state[i,j]==tileState.BLACK)
                     {
-                        gridRects[i,j].Fill=new SolidColorBrush(Colors.Black);
+                        src = new BitmapImage(new Uri("../../Ressources/black.png", UriKind.Relative));
+                        brsh = new ImageBrush(src);
+                        brsh.Stretch = Stretch.Fill;
+                        gridRects[i, j].Fill = brsh;
+                        //gridRects[i,j].Fill=new SolidColorBrush(Colors.Black);
                     }else if(state[i, j] == tileState.WHITE)
                     {
-                        gridRects[i, j].Fill = new SolidColorBrush(Colors.WhiteSmoke);
+                        src = new BitmapImage(new Uri("../../Ressources/white.png", UriKind.Relative));
+                        brsh = new ImageBrush(src);
+                        brsh.Stretch = Stretch.Fill;
+                        gridRects[i, j].Fill = brsh;
+                        //gridRects[i, j].Fill = new SolidColorBrush(Colors.WhiteSmoke);
                     }else 
                     
                     //apply "playable" color or background color
@@ -217,8 +228,7 @@ namespace Othello
                 }
             }
 
-            //update playerTurn display
-            ImageSource src;
+            
             
             //get image            
             if (isWhite)
@@ -231,7 +241,7 @@ namespace Othello
                 src = new BitmapImage(new Uri("../../Ressources/black.png",UriKind.Relative));
             }
             //set image
-            ImageBrush brsh = new ImageBrush(src);
+            brsh = new ImageBrush(src);
             brsh.Stretch = Stretch.Uniform;
             playerTurn.Fill = brsh;
 
