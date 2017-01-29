@@ -174,17 +174,11 @@ namespace Othello
 
                 // add board to undo list
                 undoList.Push(ms);
-            }
-                
+            }                
 
             //Update board colors
             updateBoard();
-
-            
-
-
-            //TODO: Databinding to display score and who's turn to play
-            
+ 
         }
         private void updateBoard()
         { 
@@ -206,14 +200,12 @@ namespace Othello
                         brsh = new ImageBrush(src);
                         brsh.Stretch = Stretch.Fill;
                         gridRects[i, j].Fill = brsh;
-                        //gridRects[i,j].Fill=new SolidColorBrush(Colors.Black);
                     }else if(state[i, j] == tileState.WHITE)
                     {
                         src = new BitmapImage(new Uri("../../Ressources/white.png", UriKind.Relative));
                         brsh = new ImageBrush(src);
                         brsh.Stretch = Stretch.Fill;
                         gridRects[i, j].Fill = brsh;
-                        //gridRects[i, j].Fill = new SolidColorBrush(Colors.WhiteSmoke);
                     }else 
                     
                     //apply "playable" color or background color
@@ -226,29 +218,25 @@ namespace Othello
                         gridRects[i, j].Fill = new SolidColorBrush(Colors.Green);
                     }
                 }
-            }
-
-            
+            }            
             
             //get image            
             if (isWhite)
             {
                 src = new BitmapImage(new Uri("../../Ressources/white.png", UriKind.Relative));
-
             }
             else
             {
                 src = new BitmapImage(new Uri("../../Ressources/black.png",UriKind.Relative));
             }
+
             //set image
             brsh = new ImageBrush(src);
             brsh.Stretch = Stretch.Uniform;
             playerTurn.Fill = brsh;
 
-
             if(myBoard.getCanMove().Count == 0)
-            {
-                
+            {              
                 myBoard.possibleMoves(!isWhite);
                 // Both players cant play
                 if(myBoard.getCanMove().Count == 0)
