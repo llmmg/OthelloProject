@@ -1,12 +1,10 @@
 ﻿using Microsoft.Win32;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -14,43 +12,45 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using System.Xml;
-using System.Xml.Serialization;
 
 namespace Othello
 {
     /// <summary>
     /// Logique d'interaction pour MainWindow.xaml
     /// </summary>
-    
+
     [Serializable]
     public partial class MainWindow : Window, INotifyPropertyChanged, ISerializable
     {
-        //TODO: binder les grids avec des objets/fonctions pour qu'elles changent de couleurs (ou qu'une image s'affiche) lors d'un click
-        //et selon les "etats" possibles
-
         public OthelloBoard myBoard;
         public bool isWhite;
         private Stack<MemoryStream> undoList;
         private Rectangle[,] gridRects;
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private String scoreWhite;
+        private String scoreBlack;
+
         //timer
         private DispatcherTimer myTimer;
         
 
-
+        /// <summary>
+        /// Main constructor
+        /// </summary>
         public MainWindow()
         {
+            // init window (its in another function for deserialize constructor to use)
             doSetup();
-
-            //TEST OthelloBoard
+            
+            // Board object
             myBoard = new OthelloBoard();
             
-
-            //update the board gui
+            // update the board gui
             updateBoard();
 
-            //boolean Black/White => turn to turn
+            // black always start
             isWhite = false;
 
             //start timer
@@ -58,13 +58,15 @@ namespace Othello
 
         }
 
+        /// <summary>
+        /// Function to initialize the UI components
+        /// </summary>
         private void doSetup()
         {
             InitializeComponent();
 
             gridRects = new Rectangle[8, 8];
 
-            curentColor = new SolidColorBrush(Colors.Red);
 
             undoList = new Stack<MemoryStream>();
 
@@ -95,25 +97,7 @@ namespace Othello
 
             }
         }
-
-        //Handler for dataBinding
-        public event PropertyChangedEventHandler PropertyChanged;
-        private Brush curentColor;
-
-        private String scoreWhite;
-        private String scoreBlack;
-
-
-
-        public Brush ReColor
-        {
-            get { return curentColor; }
-            set
-            {
-                curentColor = value;
-                NotifyPropertyChanged("ReColor");
-            }
-        }
+       
         public String updateScoreBlack
         {
             get { return scoreBlack; }
@@ -132,7 +116,8 @@ namespace Othello
                 NotifyPropertyChanged("updateScoreWhite");
             }
         }
-        //databinding
+        
+
         private void NotifyPropertyChanged(String info)
         {
             if (PropertyChanged != null)
@@ -141,8 +126,11 @@ namespace Othello
             }
         }
 
-
-        //update time labels
+        /// <summary>
+        /// Update time labels
+        /// </summary>
+        /// <param name="myObject"></param>
+        /// <param name="myEventArgs"></param>
         private void TimerEventProcessor(Object myObject,EventArgs myEventArgs)
         {
             //white playtime
@@ -154,7 +142,11 @@ namespace Othello
             time2.Content = String.Format("{0:00}:{1:00}", t2.Minutes, t2.Seconds);
         }
 
-        //Event called by all rectangles
+        /// <summary>
+        /// Click on a rectangle
+        /// </summary>
+        /// <param name="sender">Rectangle who was triggered</param>
+        /// <param name="e">MouseButtonEventArgs</param>
         private void onClick(object sender, MouseButtonEventArgs e)
         {
             Rectangle curRect = (Rectangle)sender;
@@ -181,42 +173,55 @@ namespace Othello
             updateBoard();
  
         }
+
+        /// <summary>
+        /// Update board GUI
+        /// </summary>
         private void updateBoard()
-        { 
+        {
+            //Change grid background color based on scores
+            int greenValue = 128;
+            greenValue -= myBoard.getBlackScore() - myBoard.getWhiteScore();
+            Brush background_brush = new SolidColorBrush(Color.FromRgb(0, (byte)greenValue, 0));
+            theGrid.Background = background_brush;
+
+            // Board state
             tileState[,] state= myBoard.getState();
+
+            // Update the UI scores
             updateScores();
             
-            //case image
-            ImageSource src;
+            //To draw image in tiles
+            ImageSource srcWhite = new BitmapImage(new Uri("../../Ressources/white.png", UriKind.Relative));
+            ImageSource srcBlack = new BitmapImage(new Uri("../../Ressources/black.png", UriKind.Relative));
             ImageBrush brsh;
 
             for (int i=0;i<8;i++)
             {
                 for(int j=0;j<8;j++)
                 {
-                    //apply correct color
+                    //apply correct image
                     if(state[i,j]==tileState.BLACK)
                     {
-                        src = new BitmapImage(new Uri("../../Ressources/black.png", UriKind.Relative));
-                        brsh = new ImageBrush(src);
+                        brsh = new ImageBrush(srcBlack);
                         brsh.Stretch = Stretch.Fill;
                         gridRects[i, j].Fill = brsh;
                     }else if(state[i, j] == tileState.WHITE)
                     {
-                        src = new BitmapImage(new Uri("../../Ressources/white.png", UriKind.Relative));
-                        brsh = new ImageBrush(src);
+                        brsh = new ImageBrush(srcWhite);
                         brsh.Stretch = Stretch.Fill;
                         gridRects[i, j].Fill = brsh;
                     }else 
                     
-                    //apply "playable" color or background color
+                    //apply "playable" color or null (to see the grid background color)
                     if(myBoard.isPlayable(i,j,isWhite))
                     {
                         gridRects[i, j].Fill = new SolidColorBrush(Colors.LightGreen);
 
-                    }else if(state[i,j]==tileState.EMPTY)
+                    }
+                    else if(state[i,j]==tileState.EMPTY)
                     {
-                        gridRects[i, j].Fill = new SolidColorBrush(Colors.Green);
+                        gridRects[i, j].Fill = null;
                     }
                 }
             }            
@@ -224,22 +229,24 @@ namespace Othello
             //get image            
             if (isWhite)
             {
-                src = new BitmapImage(new Uri("../../Ressources/white.png", UriKind.Relative));
+                brsh = new ImageBrush(srcWhite);
             }
             else
             {
-                src = new BitmapImage(new Uri("../../Ressources/black.png",UriKind.Relative));
+                brsh = new ImageBrush(srcBlack);
             }
 
             //set image
-            brsh = new ImageBrush(src);
             brsh.Stretch = Stretch.Uniform;
             playerTurn.Fill = brsh;
 
+            // If actual player cant play
             if(myBoard.getCanMove().Count == 0)
             {              
+                // Calculate moves for next player
                 myBoard.possibleMoves(!isWhite);
-                // Both players cant play
+
+                // Both players cant play = end of the game
                 if(myBoard.getCanMove().Count == 0)
                 {
                     string winner = "";
@@ -272,6 +279,7 @@ namespace Othello
         /*-------------------------------------------------------
        * ISerializable functions
        -------------------------------------------------------- */
+       // Deserialize
         public MainWindow(SerializationInfo info, StreamingContext context)
         {
             doSetup();
@@ -281,6 +289,7 @@ namespace Othello
 
         }
 
+        //Serialize
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("othelloboard", myBoard, typeof(OthelloBoard));
@@ -294,11 +303,12 @@ namespace Othello
        -------------------------------------------------------- */
         private void NewGame_Click(object sender, RoutedEventArgs e)
         {
+            // reset objects
             myBoard = new OthelloBoard();
 
             undoList = new Stack<MemoryStream>();
 
-            //boolean Black/White => turn to turn
+            //black always start
             isWhite = false;
 
             //update the board gui
@@ -310,6 +320,7 @@ namespace Othello
         }
         private void LoadGame_Click(object sender, RoutedEventArgs e)
         {
+            // Dialog to open a file
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
             openFileDialog1.Title = "Load game";
             openFileDialog1.ShowDialog();
@@ -332,7 +343,7 @@ namespace Othello
         }
         private void SaveGame_Click(object sender, RoutedEventArgs e)
         {
-
+            // Dialog to save
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
             saveFileDialog1.Title = "Save game";
 
@@ -357,21 +368,28 @@ namespace Othello
         {
             if(undoList.Count > 0)
             {
+                // Deserialize from memorybuffer (contains the old board state)
                 BinaryFormatter binaryFmt = new BinaryFormatter();
                 MemoryStream ms = undoList.Pop();
                 ms.Position = 0;
-                
-                OthelloBoard new_board = (OthelloBoard) binaryFmt.Deserialize(ms);
-                myBoard = new_board;
+                OthelloBoard old_board = (OthelloBoard) binaryFmt.Deserialize(ms);
+                myBoard = old_board;
+                // Change turn
                 isWhite = !isWhite;
-               // myBoard.possibleMoves(isWhite);
+
+                //Update UI
                 updateBoard();
             }
 
         }
 
+
+        /*-------------------------------------------------------
+        * Keyboard Shortcuts
+        -------------------------------------------------------- */
         private void MyOthello_KeyDown(object sender, KeyEventArgs e)
         {
+            // CTRL + Z
             if (e.Key == Key.Z && (Keyboard.Modifiers  == ModifierKeys.Control))
             {
                 Undo_Click(null, null);

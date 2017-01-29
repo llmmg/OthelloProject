@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Othello
 {
+    // Tile states
     public enum tileState
     {
         WHITE,
@@ -24,7 +25,8 @@ namespace Othello
 
         private List<Tuple<int, int>> canMove;
 
-        //stopwatch to measure time of each player
+        // stopwatch to measure time of each player
+        // Offsets are for keeping the times when serialized
         private TimeSpan offset1;
         private TimeSpan offset2;
         private Stopwatch watch1;
@@ -64,6 +66,9 @@ namespace Othello
             possibleMoves(false);
         }
 
+        /**
+         *  Functions to return players elapsed time
+         */
        public TimeSpan elapsedWatch1()
        {
             TimeSpan ts = watch1.Elapsed + offset1;
@@ -151,6 +156,7 @@ namespace Othello
         /*-------------------------------------------------------
          * ISerializable functions
          -------------------------------------------------------- */
+         // Deserialize
         public OthelloBoard(SerializationInfo info, StreamingContext context)
         {
             board = (tileState[,])info.GetValue("board", typeof(tileState[,]));
@@ -163,6 +169,7 @@ namespace Othello
 
         }
 
+        // Serialize
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("board", board, typeof(tileState[,]));
@@ -175,6 +182,12 @@ namespace Othello
          * Class functions
          -------------------------------------------------------- */
 
+        /// <summary>
+        /// Play the move
+        /// </summary>
+        /// <param name="x">grid X value</param>
+        /// <param name="y">grid Y value</param>
+        /// <param name="isWhite">which player play</param>
         private void turnPieces(int x, int y, bool isWhite)
         {
             tileState color;
@@ -500,6 +513,11 @@ namespace Othello
             }
         }
 
+        /// <summary>
+        /// Calculate what moves are available
+        /// Available moves are in canMove field
+        /// </summary>
+        /// <param name="isWhite">which player play</param>
         public void possibleMoves(bool isWhite)
         {
             tileState color;
@@ -752,6 +770,12 @@ namespace Othello
                 }
             }
         }
+
+        /// <summary>
+        /// Count how many pieces of the color are on the board
+        /// </summary>
+        /// <param name="tileColor">color of the pieces</param>
+        /// <returns></returns>
         private int calculateScore(tileState tileColor)
         {
             int score = 0;
@@ -771,7 +795,6 @@ namespace Othello
         /*-------------------------------------------------------
          * Getters and Setters
          -------------------------------------------------------- */
-        //test method that return state of the board (to update pieces after a move)
         public tileState[,] getState()
         {
             return board;
